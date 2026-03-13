@@ -1,0 +1,50 @@
+.queue-container {
+  max-width: 600px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.queue-actions {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.queue-actions input {
+  padding: 10px;
+  width: 60%;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-right: 10px;
+}
+
+.queue-actions button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.queue-actions button:hover {
+  background: #0056b3;
+}
+
+.queue-list {
+  list-style: none;
+  padding: 0;
+}
+
+.queue-list li {
+  display: flex;
+  justify-content: space-between;
+  background: #f4f4f4;
+  margin: 5px 0;
+  padding: 10px;
+  border-radius: 5px;
+}

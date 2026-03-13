@@ -1,0 +1,249 @@
+/* ===============================
+   BOOK APPOINTMENT PAGE
+   Modern Medical UI
+================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+body{
+  font-family: "Poppins", sans-serif;
+}
+
+/* Page Background */
+
+.book-appointment-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 40px 20px;
+
+  background:
+  linear-gradient(135deg,#eef4ff,#f7fbff);
+
+}
+
+/* Main Card */
+
+.appointment-form{
+  width: 100%;
+  max-width: 520px;
+
+  background: white;
+
+  padding: 40px;
+
+  border-radius: 16px;
+
+  box-shadow:
+  0 10px 30px rgba(0,0,0,0.08);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 18px;
+
+  animation: fadeIn 0.5s ease;
+}
+
+/* Title */
+
+.book-appointment-container h1{
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1e293b;
+
+  margin-bottom: 25px;
+}
+
+/* Inputs */
+
+.appointment-form input,
+.appointment-form textarea{
+
+  padding: 13px 16px;
+
+  border-radius: 10px;
+
+  border: 1px solid #dbe3ec;
+
+  font-size: 0.95rem;
+
+  transition: all .25s ease;
+
+  background:#fafcff;
+}
+
+/* Input Focus */
+
+.appointment-form input:focus,
+.appointment-form textarea:focus{
+
+  outline:none;
+
+  border-color:#2563eb;
+
+  background:white;
+
+  box-shadow:
+  0 0 0 3px rgba(37,99,235,0.15);
+}
+
+/* Textarea */
+
+.appointment-form textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+/* ===============================
+   TIME SLOTS
+================================ */
+
+.time-slots{
+
+  display:grid;
+
+  grid-template-columns: repeat(3,1fr);
+
+  gap:10px;
+
+  margin-top:10px;
+}
+
+/* Slot Base */
+
+.time-slot{
+
+  padding:10px;
+
+  border-radius:8px;
+
+  font-size:0.9rem;
+
+  font-weight:500;
+
+  border:1px solid #dbe3ec;
+
+  background:#f8fafc;
+
+  cursor:pointer;
+
+  transition: all .25s ease;
+}
+
+/* Available */
+
+.time-slot.available:hover{
+
+  background:#2563eb;
+
+  color:white;
+
+  border-color:#2563eb;
+
+  transform:translateY(-2px);
+
+  box-shadow:0 6px 15px rgba(37,99,235,.25);
+}
+
+/* Selected */
+
+.time-slot.selected{
+
+  background:#2563eb;
+
+  color:white;
+
+  border-color:#2563eb;
+
+  box-shadow:0 6px 18px rgba(37,99,235,.35);
+}
+
+/* Unavailable */
+
+.time-slot.unavailable{
+
+  background:#f1f5f9;
+
+  color:#94a3b8;
+
+  border-color:#e2e8f0;
+
+  cursor:not-allowed;
+}
+
+/* ===============================
+   SUBMIT BUTTON
+================================ */
+
+button[type="submit"]{
+
+  margin-top:10px;
+
+  padding:14px;
+
+  border-radius:10px;
+
+  border:none;
+
+  font-size:1rem;
+
+  font-weight:600;
+
+  background:linear-gradient(
+  135deg,
+  #2563eb,
+  #1d4ed8
+  );
+
+  color:white;
+
+  cursor:pointer;
+
+  transition: all .3s ease;
+}
+
+button[type="submit"]:hover{
+
+  transform:translateY(-2px);
+
+  box-shadow:
+  0 10px 25px rgba(37,99,235,.35);
+}
+
+/* ===============================
+   ANIMATION
+================================ */
+
+@keyframes fadeIn{
+
+  from{
+    opacity:0;
+    transform:translateY(15px);
+  }
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+
+/* ===============================
+   MOBILE
+================================ */
+
+@media(max-width:600px){
+
+  .appointment-form{
+    padding:25px;
+  }
+
+  .time-slots{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}

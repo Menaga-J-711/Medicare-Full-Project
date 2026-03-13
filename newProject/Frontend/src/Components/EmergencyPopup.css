@@ -1,0 +1,315 @@
+/* ============================================================
+   EmergencyPopup.css
+   Theme: Matches LandingPage — Glassmorphism + Bold Medical
+   Fonts: Nunito (headings) + DM Sans (body)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+/* ── Keyframes ─────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.45); }
+  50%       { box-shadow: 0 0 0 16px rgba(239,68,68,0); }
+}
+
+/* ── Overlay ───────────────────────────────────────────────── */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+
+  width: 100vw;
+  height: 100vh;
+
+  background: rgba(4, 18, 48, 0.75);
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+
+  z-index: 10000;
+
+  overflow: visible;   /* FIX */
+}
+
+/* ── Container ─────────────────────────────────────────────── */
+.popup-container {
+  width: 520px;
+  max-width: 95%;
+  min-height: 260px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border-radius: 28px;
+
+  padding: 2.8rem 2.6rem 2.4rem;
+
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 0 0 1px rgba(14, 165, 233, 0.1);
+
+  position: relative;
+
+  overflow: visible; /* IMPORTANT FIX */
+}
+
+/* Coloured top stripe — matches LandingPage shimmer line */
+.popup-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ef4444, #f97316, #0ea5e9, #22d3ee, #ef4444);
+  background-size: 280% auto;
+  animation: shimmer 3.5s linear infinite;
+  border-radius: 28px 28px 0 0;
+}
+
+/* ── Emergency icon ────────────────────────────────────────── */
+.emergency-icon {
+  font-size: 3.2rem;
+  text-align: center;
+  display: block;
+  margin-bottom: 0.6rem;
+  filter: drop-shadow(0 4px 12px rgba(239, 68, 68, 0.45));
+}
+
+/* ── Headings ──────────────────────────────────────────────── */
+.popup-container h2 {
+  font-family: "Nunito", sans-serif;
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #0b2d56;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.4px;
+}
+
+.popup-subtitle {
+  text-align: center;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.92rem;
+  color: #64748b;
+  font-weight: 400;
+  margin: 0 0 2rem;
+  line-height: 1.55;
+}
+
+/* ── YES / NO buttons ──────────────────────────────────────── */
+.popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-top: 0.5rem;
+}
+
+.btn-yes,
+.btn-no {
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  transition: box-shadow 0.3s ease;
+}
+
+.btn-yes {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #fff;
+  box-shadow: 0 6px 22px rgba(239, 68, 68, 0.45);
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+.btn-yes:hover  { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.6); }
+
+.btn-no {
+  background: rgba(14, 165, 233, 0.08);
+  color: #0369a1;
+  border: 2px solid rgba(14, 165, 233, 0.35) !important;
+  box-shadow: none;
+}
+.btn-no:hover { background: rgba(14, 165, 233, 0.14); }
+
+/* ── Form ──────────────────────────────────────────────────── */
+.form-header {
+  text-align: center;
+  margin-bottom: 0.2rem;
+}
+.form-header-icon {
+  font-size: 2.4rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 3px 10px rgba(14,165,233,0.4));
+}
+
+.popup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── Form groups ───────────────────────────────────────────── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 1.1rem;
+}
+
+.popup-form label {
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #334155;
+  letter-spacing: 0.2px;
+}
+
+.optional {
+  font-weight: 400;
+  color: #94a3b8;
+  font-size: 0.82rem;
+}
+
+/* Input wrapper (for spinner overlay) */
+.input-wrapper {
+  position: relative;
+}
+
+.popup-form input,
+.popup-form select {
+  width: 100%;
+  padding: 13px 16px;
+  font-size: 0.95rem;
+  font-family: "DM Sans", sans-serif;
+  border-radius: 14px;
+  border: 2px solid #bfdbfe;
+  background: #f6faff;
+  color: #1e293b;
+  transition: border-color 0.28s ease, box-shadow 0.28s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.popup-form input::placeholder { color: #94a3b8; }
+
+.popup-form input:focus,
+.popup-form select:focus {
+  outline: none;
+  border-color: #0ea5e9;
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.13);
+  background: #fff;
+}
+
+/* Detecting status badge inside input */
+.input-status {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  pointer-events: none;
+}
+.input-status.detecting { color: #0369a1; }
+
+/* Location error */
+.location-error {
+  color: #dc2626;
+  font-size: 0.82rem;
+  font-family: "DM Sans", sans-serif;
+  margin: 0;
+  padding: 0.4rem 0.7rem;
+  background: rgba(239, 68, 68, 0.07);
+  border-radius: 8px;
+  border-left: 3px solid #ef4444;
+}
+
+/* ── Spinner ───────────────────────────────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(14, 165, 233, 0.3);
+  border-top-color: #0ea5e9;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+.spinner.white {
+  border-color: rgba(255,255,255,0.3);
+  border-top-color: #ffffff;
+}
+
+/* ── Submit button ─────────────────────────────────────────── */
+.submit-btn {
+  margin-top: 0.5rem;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  background: linear-gradient(135deg, #0ea5e9, #0369a1);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(14, 165, 233, 0.42);
+  transition: box-shadow 0.28s ease, opacity 0.2s ease;
+  letter-spacing: 0.2px;
+}
+.submit-btn:hover:not(:disabled) { box-shadow: 0 10px 30px rgba(14, 165, 233, 0.55); }
+.submit-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.btn-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ── Cancel link ───────────────────────────────────────────── */
+.cancel-link {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 0.6rem;
+  padding: 0.4rem;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+  align-self: center;
+}
+.cancel-link:hover { color: #475569; background: rgba(0,0,0,0.04); }
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 560px) {
+  .popup-container {
+    padding: 2.2rem 1.6rem 2rem;
+    border-radius: 22px;
+  }
+  .popup-container h2 { font-size: 1.45rem; }
+  .popup-buttons      { flex-direction: column; align-items: stretch; gap: 0.8rem; }
+  .btn-yes, .btn-no   { width: 100%; text-align: center; }
+}
