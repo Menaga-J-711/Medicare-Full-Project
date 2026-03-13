@@ -53,7 +53,7 @@ const BookAppointment = () => {
     }
     localStorage.setItem("email", formData.email);
     try {
-      const res = await fetch("http://localhost:5000/api/appointments", {
+      const res = await fetch("https://medicare-full-project.onrender.com/api/appointments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
