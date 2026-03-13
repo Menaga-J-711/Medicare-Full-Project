@@ -58,7 +58,7 @@ const LandingPage = () => {
     if (!email) return alert("Please enter your appointment email");
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/otp/send-otp", {
+      const res = await fetch("https://medicare-full-project.onrender.com/api/otp/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -81,7 +81,7 @@ const LandingPage = () => {
     setLoading(true);
     console.log("Verifying:", email, otp);
     try {
-      const res = await fetch("http://localhost:5000/api/otp/verify-otp", {
+      const res = await fetch("https://medicare-full-project.onrender.com/api/otp/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -108,7 +108,7 @@ const LandingPage = () => {
     else if (searchQuery.toLowerCase().includes("sivak")) body = { latitude: 9.45, longitude: 77.79, bloodGroup: "A+" };
     else return alert("No hospitals found for this location!");
     try {
-      const res = await fetch("http://localhost:5000/api/hospitals/search", {
+      const res = await fetch("https://medicare-full-project.onrender.com/api/hospitals/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
