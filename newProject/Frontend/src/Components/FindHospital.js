@@ -11,7 +11,7 @@ const FindHospital = () => {
 
   // 🔥 Fetch hospitals from backend (MongoDB cluster)
   useEffect(() => {
-    fetch("http://localhost:5000/api/hospitals")
+    fetch("https://medicare-full-project.onrender.com/api/hospitals")
       .then((res) => res.json())
       .then((data) => {
         setAllHospitals(data);
