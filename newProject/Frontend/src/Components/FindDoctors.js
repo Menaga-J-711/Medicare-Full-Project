@@ -17,7 +17,7 @@ const FindDoctors = () => {
   useEffect(() => {
     if (!hospitalId) return;
 
-    fetch(`http://localhost:5000/api/doctors/hospital/${hospitalId}`)
+    fetch(`https://medicare-full-project.onrender.com/api/doctors/hospital/${hospitalId}`)
       .then((res) => res.json())
       .then((data) => {
         setDoctors(data);
