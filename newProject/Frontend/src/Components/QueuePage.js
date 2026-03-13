@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import "./QueuePage.css";
 
-const socket = io("http://localhost:5000"); // 🔗 connect to backend WebSocket server
+const socket = io("https://medicare-full-project.onrender.com"); // 🔗 connect to backend WebSocket server
 
 const QueuePage = () => {
   const [queue, setQueue] = useState([]);
@@ -16,7 +16,7 @@ const QueuePage = () => {
 useEffect(() => {
 
   const joinQueue = async () => {
-    await fetch("http://localhost:5000/api/queue/join", {
+    await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -27,7 +27,7 @@ useEffect(() => {
 
   const fetchQueue = async () => {
     const res = await fetch(
-      `http://localhost:5000/api/queue/${userEmail}`
+      `https://medicare-full-project.onrender.com/api/queue/${userEmail}`
     );
 
     const data = await res.json();
