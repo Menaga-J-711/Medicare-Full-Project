@@ -26,13 +26,13 @@ const DoctorAdminLogin = () => {
     try {
       let response;
       if (role === "doctor") {
-        response = await fetch("http://localhost:5000/api/doctors/login", {
+        response = await fetch("https://medicare-full-project.onrender.com/api/doctors/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ doctorId, email, password }),
         });
       } else {
-        response = await fetch("http://localhost:5000/api/auth/login", {
+        response = await fetch("https://medicare-full-project.onrender.com/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ role: "admin", hospital, email, password }),
