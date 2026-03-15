@@ -47,15 +47,16 @@ router.post("/send-otp", async (req, res) => {
 
     await Otp.create({ email, otp });
 
-    const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-    });
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: true,
+  connectionTimeout: 60000,
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS
+  }
+});
 
     await transporter.sendMail({
       from: `"MediCare Team" <${process.env.FROM_EMAIL}>`,
