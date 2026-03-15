@@ -49,7 +49,7 @@ const EmergencyPopup = ({ onClose }) => {
   const [loadingHospitals, setLoadingHospitals] = useState(false);
   const [locationError,    setLocationError]    = useState("");
 
-  const API_URL = "http://localhost:5000";
+  const API_URL = "https://medicare-full-project.onrender.com";
 
   // ── Original handlers — NOT touched ──
   const handleYes = () => {
