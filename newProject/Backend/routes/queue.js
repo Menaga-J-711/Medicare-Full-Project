@@ -92,6 +92,7 @@ router.get("/:email", async (req, res) => {
       status: "In Queue"
     })
       .populate("doctor", "name")
+      .select("patientName email doctor date")
       .sort({ updatedAt: 1 }); // ✅ FIXED
 
     // 3️⃣ Position
