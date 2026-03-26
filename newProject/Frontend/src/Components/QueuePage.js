@@ -3,58 +3,75 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import "./QueuePage.css";
 
-const socket = io("https://medicare-full-project.onrender.com"); // 🔗 connect to backend WebSocket server
+const socket = io("https://medicare-full-project.onrender.com");
 
 const QueuePage = () => {
   const [queue, setQueue] = useState([]);
   const [userPosition, setUserPosition] = useState(null);
   const [statusMessage, setStatusMessage] = useState("Connecting to queue...");
 
-  // 🧠 Simulate patient name from previous session or appointment
   const userEmail = localStorage.getItem("email") || "user@example.com";
-  
-useEffect(() => {
 
-  const joinQueue = async () => {
-    await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email: userEmail })
-    });
-  };
+  useEffect(() => {
 
-  const fetchQueue = async () => {
-    const res = await fetch(
-      `https://medicare-full-project.onrender.com/api/queue/${userEmail}`
-    );
+    const joinQueue = async () => {
+      await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: userEmail })
+      });
+    };
 
-    const data = await res.json();
+    const fetchQueue = async () => {
+      const res = await fetch(
+        `https://medicare-full-project.onrender.com/api/queue/${userEmail}`
+      );
 
-    if (data.inQueue) {
-      setQueue(data.queue);
-      setUserPosition(data.position);
-      setStatusMessage(`Doctor: ${data.doctor}`);
-    } else {
+      const data = await res.json();
+
+      if (data.inQueue) {
+        setQueue(data.queue);
+        setUserPosition(data.position);
+        setStatusMessage(`Doctor: ${data.doctor}`);
+      } else {
+        setUserPosition(null);
+      }
+    };
+
+    const init = async () => {
+      await joinQueue();
+      await fetchQueue();
+    };
+
+    init();
+
+    socket.on("queueUpdateDoctor", fetchQueue);
+
+    return () => {
+      socket.off("queueUpdateDoctor");
+    };
+
+  }, [userEmail]);
+
+  // ✅ LEAVE FUNCTION
+  const handleLeave = async () => {
+    try {
+      await fetch("https://medicare-full-project.onrender.com/api/queue/leave", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: userEmail })
+      });
+
       setUserPosition(null);
+
+    } catch (err) {
+      console.error(err);
     }
   };
-
-  const init = async () => {
-    await joinQueue();  // ⭐ FIRST JOIN
-    await fetchQueue(); // ⭐ THEN FETCH QUEUE
-  };
-
-  init();
-
-  socket.on("queueUpdateDoctor", fetchQueue);
-
-  return () => {
-    socket.off("queueUpdateDoctor");
-  };
-
-}, [userEmail]);
 
   return (
     <div className="queue-page-container">
@@ -74,16 +91,30 @@ useEffect(() => {
 
           <div className="queue-list">
             <h3>Current Queue</h3>
-            <ul>
-              {queue.map((q, idx) => (
-                <li
-                  key={idx}
-                  className={q.email === userEmail ? "highlight" : ""}
-                >
-                  {idx + 1}. {q.name}
-                </li>
-              ))}
-            </ul>
+
+            {queue.map((q, idx) => (
+              <div
+                key={q._id}
+                className={`queue-item ${
+                  q.email === userEmail ? "highlight" : ""
+                }`}
+              >
+                <span>
+                  {idx + 1}. {q.patientName}
+                </span>
+
+                {/* ✅ SHOW ONLY FOR CURRENT USER */}
+                {q.email === userEmail && (
+                  <button
+                    className="leave-btn"
+                    onClick={handleLeave}
+                  >
+                    Leave
+                  </button>
+                )}
+              </div>
+            ))}
+
           </div>
         </>
       ) : (
