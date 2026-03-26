@@ -2,7 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/Appointment");
 
+// ===============================
 // JOIN QUEUE
+// ===============================
 router.post("/join", async (req, res) => {
   const { email } = req.body;
 
@@ -21,6 +23,10 @@ router.post("/join", async (req, res) => {
     appointment.status = "In Queue";
     await appointment.save();
 
+    // 🔥 SOCKET EMIT (REALTIME FIX)
+    const io = req.app.get("io");
+    io.emit("queueUpdateDoctor");
+
     res.json({ message: "Joined queue successfully" });
 
   } catch (err) {
@@ -28,7 +34,10 @@ router.post("/join", async (req, res) => {
   }
 });
 
+
+// ===============================
 // LEAVE QUEUE
+// ===============================
 router.post("/leave", async (req, res) => {
   const { email } = req.body;
 
@@ -47,6 +56,10 @@ router.post("/leave", async (req, res) => {
     appointment.status = "Left";
     await appointment.save();
 
+    // 🔥 SOCKET EMIT
+    const io = req.app.get("io");
+    io.emit("queueUpdateDoctor");
+
     res.json({ message: "Left queue successfully" });
 
   } catch (err) {
@@ -54,29 +67,34 @@ router.post("/leave", async (req, res) => {
   }
 });
 
-// GET QUEUE DETAILS (Professional Auto Fetch)
+
+// ===============================
+// GET QUEUE DETAILS
+// ===============================
 router.get("/:email", async (req, res) => {
   try {
     const { email } = req.params;
 
-    // 1️⃣ Find this patient who is currently in queue
+    // 1️⃣ Find current user
     const patient = await Appointment.findOne({
-    email,
-    status: "In Queue"
-      }).populate("doctor", "name");
+      email,
+      status: "In Queue"
+    }).populate("doctor", "name");
 
     if (!patient) {
       return res.json({ inQueue: false });
     }
 
-    // 2️⃣ Get all patients for same doctor & same date
+    // 2️⃣ Get queue (FIXED SORTING 🔥)
     const queueList = await Appointment.find({
       doctor: patient.doctor._id,
       date: patient.date,
       status: "In Queue"
-    }).populate("doctor", "name").sort({ createdAt: 1 });
+    })
+      .populate("doctor", "name")
+      .sort({ updatedAt: 1 }); // ✅ FIXED
 
-    // 3️⃣ Calculate position
+    // 3️⃣ Position
     const position =
       queueList.findIndex(p => p.email === email) + 1;
 
@@ -91,7 +109,5 @@ router.get("/:email", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-
 
 module.exports = router;
