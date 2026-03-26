@@ -1,4 +1,3 @@
-landing page.js
 // ✅ buildy/Frontend/src/Components/LandingPage.js
 // 🎨 UI UPGRADED with Framer Motion — core logic 100% unchanged
 // 📦 First run: npm install framer-motion
@@ -43,61 +42,22 @@ const overlayAnim = {
 const LandingPage = () => {
   const navigate = useNavigate();
 
-  // ── Original state — NOT touched ──
-  const [showModal,    setShowModal]    = useState(false);
-  // const [email,        setEmail]        = useState("");
-  // const [otpSent,      setOtpSent]      = useState(false);
-  // const [otp,          setOtp]          = useState("");
-  const [loading,      setLoading]      = useState(false);
-  const [searchQuery,  setSearchQuery]  = useState("");
-  const [hospitals,    setHospitals]    = useState([]);
+  // ✅ FIXED STATE (email restored, OTP removed)
+  const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hospitals, setHospitals] = useState([]);
 
-  // ── Original handlers — NOT touched ──
   const handleJoinQueue = () => setShowModal(true);
 
-  const handleSendOtp = async () => {
+  // ✅ NEW SIMPLE JOIN (NO OTP)
+  const handleJoinDirect = () => {
     if (!email) return alert("Please enter your appointment email");
-    setLoading(true);
-    try {
-      const res = await fetch("https://medicare-full-project.onrender.com/api/otp/send-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        localStorage.setItem("email", email);
-        alert("OTP sent to your email!");
-        setOtpSent(true);
-      } else alert(data.msg || "Error sending OTP");
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
-    }
-    setLoading(false);
-  };
 
-  const handleVerifyOtp = async () => {
-    if (!otp) return alert("Enter OTP");
-    setLoading(true);
-    console.log("Verifying:", email, otp);
-    try {
-      const res = await fetch("https://medicare-full-project.onrender.com/api/otp/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        alert("OTP verified! Joining queue...");
-        setShowModal(false);
-        navigate("/queue", { state: { email } });
-      } else alert(data.msg || "Invalid OTP");
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
-    }
-    setLoading(false);
+    localStorage.setItem("email", email);
+    setShowModal(false);
+    navigate("/queue", { state: { email } });
   };
 
   const handleSearch = async (e) => {
@@ -121,75 +81,41 @@ const LandingPage = () => {
     }
   };
 
-  // ── JSX ─────────────────────────────────────────────────────
   return (
     <div className="landing-container">
 
-      {/* ── NAVBAR ── */}
-      <motion.nav
-        className="navbar"
-        initial={{ y: -80, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-      >
-        <motion.div
-          className="logo"
-          initial={{ opacity: 0, scale: 0.75 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.35, duration: 0.5 }}
-        >
-          MediCare
-        </motion.div>
-
-        <motion.ul className="nav-links" variants={stagger} initial="hidden" animate="visible">
-          {[
-            { to: "/",             label: "Emergency " },
-            { to: "/findhospital", label: "Find Hospitals" },
-            // { to: "/about",        label: "About" },
-            { to: "/login",        label: "Login" },
-          ].map((item, i) => (
-            <motion.li key={item.to} variants={fadeUp} custom={i}>
-              <Link to={item.to}>{item.label}</Link>
-            </motion.li>
-          ))}
-          <motion.li variants={fadeUp} custom={4}>
+      {/* NAVBAR */}
+      <motion.nav className="navbar" initial={{ y: -80, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+        <div className="logo">MediCare</div>
+        <ul className="nav-links">
+          <li><Link to="/">Emergency</Link></li>
+          <li><Link to="/findhospital">Find Hospitals</Link></li>
+          <li><Link to="/login">Login</Link></li>
+          <li>
             <button onClick={handleJoinQueue} className="queue-btn">🚑 Join Queue</button>
-          </motion.li>
-        </motion.ul>
+          </li>
+        </ul>
       </motion.nav>
 
-      {/* ── OTP MODAL ── */}
+      {/* ✅ UPDATED MODAL (OTP REMOVED ONLY) */}
       <AnimatePresence>
         {showModal && (
           <motion.div className="modal-overlay" variants={overlayAnim} initial="hidden" animate="visible" exit="exit">
-            <motion.div className="modal" variants={modalAnim} initial="hidden" animate="visible" exit="exit">
-              <h2>{otpSent ? "🔐 Verify OTP" : "📧 Join Queue via Email"}</h2>
-              {!otpSent ? (
-                <>
-                  <input
-                    type="email"
-                    placeholder="Enter your appointment email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <motion.button onClick={handleSendOtp} disabled={loading} whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
-                    {loading ? "Sending..." : "Send OTP"}
-                  </motion.button>
-                </>
-              ) : (
-                <>
-                  <input
-                    type="text"
-                    placeholder="Enter OTP"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                  />
-                  <motion.button onClick={handleVerifyOtp} disabled={loading} whileHover={{ scale: 1.04, y: -2 }} whileTap={{ scale: 0.97 }}>
-                    {loading ? "Verifying..." : "Verify OTP"}
-                  </motion.button>
-                </>
-              )}
-              <motion.button className="cancel-btn" onClick={() => setShowModal(false)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <motion.div className="modal" variants={modalAnim}>
+              <h2>📧 Join Queue via Email</h2>
+
+              <input
+                type="email"
+                placeholder="Enter your appointment email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+
+              <motion.button onClick={handleJoinDirect} disabled={loading}>
+                Join Queue
+              </motion.button>
+
+              <motion.button className="cancel-btn" onClick={() => setShowModal(false)}>
                 Cancel
               </motion.button>
             </motion.div>
@@ -197,7 +123,7 @@ const LandingPage = () => {
         )}
       </AnimatePresence>
 
-      {/* ── HERO ── */}
+       {/* ── HERO ── */}
       <section className="hero">
         {/* Floating background particles */}
         <div className="hero-particles">
