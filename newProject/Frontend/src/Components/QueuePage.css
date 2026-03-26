@@ -58,3 +58,37 @@ h1 {
   margin-top: 2rem;
   font-style: italic;
 }
+
+.queue-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin: 8px 0;
+  background: #f5f7fb;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+/* Highlight current user */
+.highlight {
+  background: #d1f7d6;
+  font-weight: bold;
+}
+
+/* Leave button hidden */
+.leave-btn {
+  opacity: 0;
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* Show on hover */
+.queue-item:hover .leave-btn {
+  opacity: 1;
+}
