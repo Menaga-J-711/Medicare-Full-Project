@@ -1,3 +1,4 @@
+```jsx
 // frontend/src/pages/QueuePage.js
 import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
@@ -14,29 +15,42 @@ const QueuePage = () => {
 
   useEffect(() => {
 
+    // ✅ JOIN QUEUE
     const joinQueue = async () => {
-      await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email: userEmail })
-      });
+      try {
+        await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email: userEmail })
+        });
+      } catch (err) {
+        console.error("Join Error:", err);
+      }
     };
 
+    // ✅ FETCH QUEUE
     const fetchQueue = async () => {
-      const res = await fetch(
-        `https://medicare-full-project.onrender.com/api/queue/${userEmail}`
-      );
+      try {
+        const res = await fetch(
+          `https://medicare-full-project.onrender.com/api/queue/${userEmail}`
+        );
 
-      const data = await res.json();
+        const data = await res.json();
+        console.log("QUEUE DATA:", data);
 
-      if (data.inQueue) {
-        setQueue(data.queue);
-        setUserPosition(data.position);
-        setStatusMessage(`Doctor: ${data.doctor}`);
-      } else {
-        setUserPosition(null);
+        if (data.inQueue) {
+          setQueue(data.queue);
+          setUserPosition(data.position);
+          setStatusMessage(`Doctor: ${data.doctor}`);
+        } else {
+          setUserPosition(null);
+          setQueue([]);
+        }
+
+      } catch (err) {
+        console.error("Fetch Error:", err);
       }
     };
 
@@ -47,6 +61,7 @@ const QueuePage = () => {
 
     init();
 
+    // ✅ REALTIME UPDATE
     socket.on("queueUpdateDoctor", fetchQueue);
 
     return () => {
@@ -55,7 +70,7 @@ const QueuePage = () => {
 
   }, [userEmail]);
 
-  // ✅ LEAVE FUNCTION
+  // ✅ LEAVE QUEUE
   const handleLeave = async () => {
     try {
       await fetch("https://medicare-full-project.onrender.com/api/queue/leave", {
@@ -67,9 +82,10 @@ const QueuePage = () => {
       });
 
       setUserPosition(null);
+      setQueue([]);
 
     } catch (err) {
-      console.error(err);
+      console.error("Leave Error:", err);
     }
   };
 
@@ -92,30 +108,36 @@ const QueuePage = () => {
           <div className="queue-list">
             <h3>Current Queue</h3>
 
-            {queue.map((q, idx) => (
-              console.log(userEmail);
-             console.log(q.email);
-              <div
-                key={q._id}
-                className={`queue-item ${
-                  q.email === userEmail ? "highlight" : ""
-                }`}
-              >
-                <span>
-                  {idx + 1}. {q.patientName}
-                </span>
+            {queue.map((q, idx) => {
 
-                {/* ✅ SHOW ONLY FOR CURRENT USER */}
-                {q.email === userEmail && (
-                  <button
-                    className="leave-btn"
-                    onClick={handleLeave}
-                  >
-                    Leave
-                  </button>
-                )}
-              </div>
-            ))}
+              console.log("Logged user:", userEmail);
+              console.log("Queue user:", q.email);
+
+              return (
+                <div
+                  key={q._id}
+                  className={`queue-item ${
+                    q.email?.toLowerCase() === userEmail?.toLowerCase()
+                      ? "highlight"
+                      : ""
+                  }`}
+                >
+                  <span>
+                    {idx + 1}. {q.patientName || q.name || "No Name"}
+                  </span>
+
+                  {/* ✅ SHOW ONLY FOR CURRENT USER */}
+                  {q.email?.toLowerCase() === userEmail?.toLowerCase() && (
+                    <button
+                      className="leave-btn"
+                      onClick={handleLeave}
+                    >
+                      Leave
+                    </button>
+                  )}
+                </div>
+              );
+            })}
 
           </div>
         </>
@@ -127,3 +149,4 @@ const QueuePage = () => {
 };
 
 export default QueuePage;
+```
