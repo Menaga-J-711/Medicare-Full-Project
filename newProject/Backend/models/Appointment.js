@@ -1,10 +1,10 @@
+```js
 const mongoose = require("mongoose");
 
 const AppointmentSchema = new mongoose.Schema(
   {
     patientName: { type: String, required: true },
     email: { type: String, required: true },
-    { timestamps: true },
 
     doctor: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,13 +25,14 @@ const AppointmentSchema = new mongoose.Schema(
 
     status: {
       type: String,
-       enum: ["Waiting", "In Queue", "Completed", "Left"],
+      enum: ["Waiting", "In Queue", "Completed", "Left"],
       default: "Waiting",
     },
 
     notes: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true } // ✅ CORRECT PLACE
 );
 
 module.exports = mongoose.model("Appointment", AppointmentSchema);
+```
