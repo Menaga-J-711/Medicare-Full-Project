@@ -93,6 +93,8 @@ const QueuePage = () => {
             <h3>Current Queue</h3>
 
             {queue.map((q, idx) => (
+              console.log(userEmail);
+             console.log(q.email);
               <div
                 key={q._id}
                 className={`queue-item ${
