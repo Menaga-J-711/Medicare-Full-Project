@@ -1,114 +1,152 @@
-const express = require("express");
-const router = express.Router();
-const Appointment = require("../models/Appointment");
+```jsx
+// frontend/src/pages/QueuePage.js
+import React, { useEffect, useState } from "react";
+import io from "socket.io-client";
+import "./QueuePage.css";
 
-// ===============================
-// JOIN QUEUE
-// ===============================
-router.post("/join", async (req, res) => {
-  const { email } = req.body;
+const socket = io("https://medicare-full-project.onrender.com");
 
-  try {
-    const appointment = await Appointment.findOne({
-      email,
-      status: "Waiting"
-    });
+const QueuePage = () => {
+  const [queue, setQueue] = useState([]);
+  const [userPosition, setUserPosition] = useState(null);
+  const [statusMessage, setStatusMessage] = useState("Connecting to queue...");
 
-    if (!appointment) {
-      return res.status(400).json({
-        message: "No valid appointment found"
+  const userEmail = localStorage.getItem("email") || "user@example.com";
+
+  useEffect(() => {
+
+    // ✅ JOIN QUEUE
+    const joinQueue = async () => {
+      try {
+        await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ email: userEmail })
+        });
+      } catch (err) {
+        console.error("Join Error:", err);
+      }
+    };
+
+    // ✅ FETCH QUEUE
+    const fetchQueue = async () => {
+      try {
+        const res = await fetch(
+          `https://medicare-full-project.onrender.com/api/queue/${userEmail}`
+        );
+
+        const data = await res.json();
+        console.log("QUEUE DATA:", data);
+
+        if (data.inQueue) {
+          setQueue(data.queue);
+          setUserPosition(data.position);
+          setStatusMessage(`Doctor: ${data.doctor}`);
+        } else {
+          setUserPosition(null);
+          setQueue([]);
+        }
+
+      } catch (err) {
+        console.error("Fetch Error:", err);
+      }
+    };
+
+    const init = async () => {
+      await joinQueue();
+      await fetchQueue();
+    };
+
+    init();
+
+    // ✅ REALTIME UPDATE
+    socket.on("queueUpdateDoctor", fetchQueue);
+
+    return () => {
+      socket.off("queueUpdateDoctor");
+    };
+
+  }, [userEmail]);
+
+  // ✅ LEAVE QUEUE
+  const handleLeave = async () => {
+    try {
+      await fetch("https://medicare-full-project.onrender.com/api/queue/leave", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: userEmail })
       });
+
+      setUserPosition(null);
+      setQueue([]);
+
+    } catch (err) {
+      console.error("Leave Error:", err);
     }
+  };
 
-    appointment.status = "In Queue";
-    await appointment.save();
+  return (
+    <div className="queue-page-container">
+      <h1>🏥 Live Queue Status</h1>
+      <p className="status">{statusMessage}</p>
 
-    // 🔥 SOCKET EMIT (REALTIME FIX)
-    const io = req.app.get("io");
-    io.emit("queueUpdateDoctor");
+      {userPosition ? (
+        <>
+          <div className="queue-status-card">
+            <h2>Your Position: {userPosition}</h2>
+            <p>
+              {userPosition === 1
+                ? "You're next to see the doctor! 💉"
+                : `There are ${userPosition - 1} people ahead of you.`}
+            </p>
+          </div>
 
-    res.json({ message: "Joined queue successfully" });
+          <div className="queue-list">
+            <h3>Current Queue</h3>
 
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
+            {queue.map((q, idx) => {
 
+              console.log("Logged user:", userEmail);
+              console.log("Queue user:", q.email);
 
-// ===============================
-// LEAVE QUEUE
-// ===============================
-router.post("/leave", async (req, res) => {
-  const { email } = req.body;
+              return (
+                <div
+                  key={q._id}
+                  className={`queue-item ${
+                    q.email?.toLowerCase() === userEmail?.toLowerCase()
+                      ? "highlight"
+                      : ""
+                  }`}
+                >
+                  <span>
+                    {idx + 1}. {q.patientName || q.name || "No Name"}
+                  </span>
 
-  try {
-    const appointment = await Appointment.findOne({
-      email,
-      status: "In Queue"
-    });
+                  {/* ✅ SHOW ONLY FOR CURRENT USER */}
+                  {q.email?.toLowerCase() === userEmail?.toLowerCase() && (
+                    <button
+                      className="leave-btn"
+                      onClick={handleLeave}
+                    >
+                      Leave
+                    </button>
+                  )}
+                </div>
+              );
+            })}
 
-    if (!appointment) {
-      return res.status(400).json({
-        message: "Not currently in queue"
-      });
-    }
+          </div>
+        </>
+      ) : (
+        <p className="no-queue">You are not currently in the queue.</p>
+      )}
+    </div>
+  );
+};
 
-    appointment.status = "Left";
-    await appointment.save();
-
-    // 🔥 SOCKET EMIT
-    const io = req.app.get("io");
-    io.emit("queueUpdateDoctor");
-
-    res.json({ message: "Left queue successfully" });
-
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-
-// ===============================
-// GET QUEUE DETAILS
-// ===============================
-router.get("/:email", async (req, res) => {
-  try {
-    const { email } = req.params;
-
-    // 1️⃣ Find current user
-    const patient = await Appointment.findOne({
-      email,
-      status: "In Queue"
-    }).populate("doctor", "name");
-
-    if (!patient) {
-      return res.json({ inQueue: false });
-    }
-
-    // 2️⃣ Get queue (FIXED SORTING 🔥)
-    const queueList = await Appointment.find({
-      doctor: patient.doctor._id,
-      date: patient.date,
-      status: "In Queue"
-    })
-      .populate("doctor", "name")
-      .select("patientName email doctor date")
-      .sort({ updatedAt: 1 }); // ✅ FIXED
-
-    // 3️⃣ Position
-    const position =
-      queueList.findIndex(p => p.email === email) + 1;
-
-    res.json({
-      inQueue: true,
-      doctor: patient.doctor.name,
-      queue: queueList,
-      position
-    });
-
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-module.exports = router;
+export default QueuePage;
+```
