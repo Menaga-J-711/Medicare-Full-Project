@@ -1,10 +1,16 @@
-```js
 const mongoose = require("mongoose");
 
 const AppointmentSchema = new mongoose.Schema(
   {
-    patientName: { type: String, required: true },
-    email: { type: String, required: true },
+    patientName: {
+      type: String,
+      required: true,
+    },
+
+    email: {
+      type: String,
+      required: true,
+    },
 
     doctor: {
       type: mongoose.Schema.Types.ObjectId,
@@ -18,10 +24,19 @@ const AppointmentSchema = new mongoose.Schema(
       required: true,
     },
 
-    date: { type: String, required: true },
-    time: { type: String, required: true },
+    date: {
+      type: String,
+      required: true,
+    },
 
-    queueNumber: { type: Number },
+    time: {
+      type: String,
+      required: true,
+    },
+
+    queueNumber: {
+      type: Number,
+    },
 
     status: {
       type: String,
@@ -29,10 +44,11 @@ const AppointmentSchema = new mongoose.Schema(
       default: "Waiting",
     },
 
-    notes: { type: String },
+    notes: {
+      type: String,
+    },
   },
-  { timestamps: true } // ✅ CORRECT PLACE
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Appointment", AppointmentSchema);
-```
