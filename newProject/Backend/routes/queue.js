@@ -1,30 +1,28 @@
-```js
 // ===============================
-// GET QUEUE DETAILS (FINAL WORKING)
+// GET QUEUE DETAILS (FINAL FIXED)
 // ===============================
 router.get("/:email", async (req, res) => {
   try {
     const { email } = req.params;
 
-    // 1️⃣ Find current user
+    // 1️⃣ Find current patient
     const patient = await Appointment.findOne({
       email,
-      status: "In Queue"
+      status: "In Queue",
     }).populate("doctor", "name");
 
     if (!patient) {
       return res.json({ inQueue: false });
     }
 
-    // 2️⃣ Get queue (FIFO order)
+    // 2️⃣ Get full queue (FIFO)
     const queueList = await Appointment.find({
       doctor: patient.doctor._id,
       date: patient.date,
-      status: "In Queue"
+      status: "In Queue",
     })
       .populate("doctor", "name")
-      // 🔥 IMPORTANT: include BOTH fields
-      .select("patientName name email doctor date createdAt")
+      .select("patientName email doctor date createdAt") // ✅ cleaned
       .sort({ createdAt: 1 });
 
     // 3️⃣ Calculate position
@@ -33,23 +31,21 @@ router.get("/:email", async (req, res) => {
         (p) => p.email.toLowerCase() === email.toLowerCase()
       ) + 1;
 
-    // 4️⃣ FORMAT RESPONSE (🔥 FINAL FIX HERE)
+    // 4️⃣ Format queue response
     const formattedQueue = queueList.map((q) => ({
       _id: q._id,
       email: q.email,
-      patientName: q.patientName || q.name || "No Name", // ✅ supports old + new data
+      patientName: q.patientName || "No Name", // ✅ only correct field
     }));
 
     res.json({
       inQueue: true,
       doctor: patient.doctor?.name || "Doctor",
       queue: formattedQueue,
-      position
+      position,
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: err.message });
   }
 });
-```
