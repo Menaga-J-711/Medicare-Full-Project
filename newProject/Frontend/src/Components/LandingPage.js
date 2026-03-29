@@ -48,18 +48,27 @@ const LandingPage = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [hospitals, setHospitals] = useState([]);
+  const [patientName, setPatientName] = useState("");
 
   const handleJoinQueue = () => setShowModal(true);
 
   // ✅ NEW SIMPLE JOIN (NO OTP)
-  const handleJoinDirect = () => {
-    if (!email) return alert("Please enter your appointment email");
+ const handleJoinDirect = () => {
+  if (!email) return alert("Please enter your appointment email");
 
-    localStorage.setItem("email", email);
-     localStorage.setItem("patientName", patientName); // ✅ STORE NAME
-    setShowModal(false);
-    navigate("/queue", { state: { email,patientName  } });
-  };
+  const patientName = prompt("Enter your name"); // 🔥 ADD THIS
+
+  if (!patientName) return alert("Name is required");
+
+  localStorage.setItem("email", email);
+  localStorage.setItem("patientName", patientName); // ✅ STORE NAME
+
+  setShowModal(false);
+
+  navigate("/queue", {
+    state: { email, patientName } // ✅ PASS NAME
+  });
+};;
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -105,13 +114,19 @@ const LandingPage = () => {
             <motion.div className="modal" variants={modalAnim}>
               <h2>📧 Join Queue via Email</h2>
 
+             <input
+                type="text"
+                placeholder="Enter your name"
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+              />
+
               <input
                 type="email"
                 placeholder="Enter your appointment email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-
               <motion.button onClick={handleJoinDirect} disabled={loading}>
                 Join Queue
               </motion.button>
@@ -235,13 +250,13 @@ const LandingPage = () => {
       <motion.section
         className="find-hospital"
         initial={{ opacity: 0, y: 60 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
         viewport={{ once: true, amount: 0.18 }}
         transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
       >
         <motion.h2
           initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
@@ -252,7 +267,7 @@ const LandingPage = () => {
           className="search-bar"
           onSubmit={handleSearch}
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           viewport={{ once: true }}
           transition={{ delay: 0.18, duration: 0.6 }}
         >
@@ -281,7 +296,7 @@ const LandingPage = () => {
           ) : (
             hospitals.map((hosp, i) => (
               <motion.div
-                key={hosp.id}
+                key={hosp._id || hosp.id}
                 className="hospital-card"
                 variants={fadeUp}
                 custom={i}
@@ -302,7 +317,7 @@ const LandingPage = () => {
       <section className="features">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           viewport={{ once: true }}
           transition={{ duration: 0.65 }}
         >
