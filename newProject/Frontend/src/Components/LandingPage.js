@@ -63,9 +63,10 @@ const handleJoinDirect = () => {
 
   setShowModal(false);
 
-  navigate("/queue", {
-    state: { email, patientName }
-  });
+  navigate("/queue");
+  //         , {
+  //   state: { email, patientName }
+  // }
 };
 
   const handleSearch = async (e) => {
