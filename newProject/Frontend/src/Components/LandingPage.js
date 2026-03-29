@@ -53,22 +53,20 @@ const LandingPage = () => {
   const handleJoinQueue = () => setShowModal(true);
 
   // ✅ NEW SIMPLE JOIN (NO OTP)
- const handleJoinDirect = () => {
+const handleJoinDirect = () => {
   if (!email) return alert("Please enter your appointment email");
 
-  const patientName = prompt("Enter your name"); // 🔥 ADD THIS
-
-  if (!patientName) return alert("Name is required");
+  if (!patientName) return alert("Please enter your name"); // ✅ use state
 
   localStorage.setItem("email", email);
-  localStorage.setItem("patientName", patientName); // ✅ STORE NAME
+  localStorage.setItem("patientName", patientName); // ✅ store correct name
 
   setShowModal(false);
 
   navigate("/queue", {
-    state: { email, patientName } // ✅ PASS NAME
+    state: { email, patientName }
   });
-};;
+};
 
   const handleSearch = async (e) => {
     e.preventDefault();
