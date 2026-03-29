@@ -56,8 +56,9 @@ const LandingPage = () => {
     if (!email) return alert("Please enter your appointment email");
 
     localStorage.setItem("email", email);
+     localStorage.setItem("patientName", patientName); // ✅ STORE NAME
     setShowModal(false);
-    navigate("/queue", { state: { email } });
+    navigate("/queue", { state: { email,patientName  } });
   };
 
   const handleSearch = async (e) => {
