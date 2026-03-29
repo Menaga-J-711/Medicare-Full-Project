@@ -16,19 +16,22 @@ const QueuePage = () => {
   useEffect(() => {
 
     // ✅ JOIN QUEUE
-    const joinQueue = async () => {
-      try {
-        await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ email: userEmail })
-        });
-      } catch (err) {
-        console.error("Join Error:", err);
-      }
-    };
+const joinQueue = async () => {
+  try {
+    await fetch("https://medicare-full-project.onrender.com/api/queue/join", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        email: userEmail,
+        patientName: localStorage.getItem("patientName") // ✅ FIXED
+      })
+    });
+  } catch (err) {
+    console.error("Join Error:", err);
+  }
+};
 
     // ✅ FETCH QUEUE
     const fetchQueue = async () => {
