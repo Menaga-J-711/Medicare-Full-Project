@@ -9,14 +9,12 @@ router.post("/join", async (req, res) => {
   const { email, patientName, doctor, hospital, date, time } = req.body;
 
   try {
-    // 1️⃣ Validate input
     if (!email || !patientName || !doctor || !hospital || !date || !time) {
       return res.status(400).json({
         message: "All fields are required",
       });
     }
 
-    // 2️⃣ Check if already in queue
     const existing = await Appointment.findOne({
       email,
       status: "In Queue",
@@ -28,17 +26,15 @@ router.post("/join", async (req, res) => {
       });
     }
 
-    // 3️⃣ Generate queue number (FIFO per doctor & date)
     const count = await Appointment.countDocuments({
       doctor,
       date,
       status: "In Queue",
     });
 
-    // 4️⃣ Create new appointment
     const newAppointment = new Appointment({
       email,
-      patientName, // ✅ FIXED: comes from frontend
+      patientName,
       doctor,
       hospital,
       date,
@@ -49,15 +45,43 @@ router.post("/join", async (req, res) => {
 
     await newAppointment.save();
 
+    // ✅ 🔥 EMIT BEFORE RESPONSE
+    req.app.get("io").emit("queueUpdateDoctor");
+
+    // ✅ KEEP ONLY ONE RESPONSE
     res.status(200).json({
       message: "Joined queue successfully",
       appointment: newAppointment,
     });
+
   } catch (error) {
     console.error("JOIN ERROR:", error);
     res.status(500).json({
       message: "Error joining queue",
     });
+  }
+});
+
+// ===============================
+// LEAVE QUEUE
+// ===============================
+router.post("/leave", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    await Appointment.findOneAndDelete({
+      email,
+      status: "In Queue",
+    });
+
+    // ✅ 🔥 BROADCAST UPDATE
+    req.app.get("io").emit("queueUpdateDoctor");
+
+    res.json({ message: "Left queue successfully" });
+
+  } catch (err) {
+    console.error("LEAVE ERROR:", err);
+    res.status(500).json({ message: err.message });
   }
 });
 
