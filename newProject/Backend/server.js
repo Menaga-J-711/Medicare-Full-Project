@@ -44,7 +44,13 @@ const io = new Server(server, {
     methods: ["GET", "POST"]
   }
 });
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
 
+// app.set("io", io); // ✅ MUST EXIST
 // ✅ VERY IMPORTANT (THIS FIXES THE ERROR)
 app.set("io", io);
 
